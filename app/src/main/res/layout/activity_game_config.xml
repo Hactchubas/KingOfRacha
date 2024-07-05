@@ -12,7 +12,7 @@
     <LinearLayout
         android:id="@+id/configVerticalLayout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:orientation="vertical"
         android:paddingHorizontal="30sp"
         app:layout_constraintBottom_toTopOf="@+id/createGameButton"
@@ -21,110 +21,113 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:id="@+id/roundsLinear"
+            android:id="@+id/roundsConfigLinear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="8sp">
+            android:layout_marginVertical="30sp"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/roundsTextView"
+            <LinearLayout
+                android:id="@+id/roundsLinear"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Rounds"
-                android:textColor="@color/primary_text"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:paddingVertical="8sp">
 
-            <EditText
-                android:id="@+id/roundsEditView"
-                style="@style/InputEdit"
+                <TextView
+                    android:id="@+id/roundsTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Rounds"
+                    android:textColor="@color/primary_text"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/roundsEditView"
+                    style="@style/InputEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:ems="3"
+                    android:hint="0"
+                    android:hyphenationFrequency="normal"
+                    android:inputType="numberSigned"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                    android:textColor="@color/secondary" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/roundTimeLinear"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:ems="3"
-                android:hint="0"
-                android:hyphenationFrequency="normal"
-                android:inputType="numberSigned"
-                android:textAlignment="center"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-                android:textColor="@color/secondary" />
-        </LinearLayout>
+                android:orientation="horizontal"
+                android:paddingVertical="8sp">
 
-        <LinearLayout
-            android:id="@+id/roundTimeLinear"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="8sp">
+                <TextView
+                    android:id="@+id/roundTimeTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Round Time"
+                    android:textColor="@color/primary_text"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/roundTimeTextView"
+                <EditText
+                    android:id="@+id/roundTextTime"
+                    style="@style/InputEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:ems="3"
+                    android:hint="00:00"
+                    android:inputType="time" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/pointsLinear"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Round Time"
-                android:textColor="@color/primary_text"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:paddingVertical="8sp">
 
-            <EditText
-                android:id="@+id/roundTextTime"
-                style="@style/InputEdit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:ems="3"
-                android:hint="00:00"
-                android:inputType="time" />
+                <TextView
+                    android:id="@+id/roundPointsTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Points"
+                    android:textColor="@color/primary_text"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/pointsLinear"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingVertical="8sp">
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Points"
-                android:textColor="@color/primary_text"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/editTextNumberSigned2"
-                style="@style/InputEdit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="3"
-                android:ems="10"
-                android:hint="0"
-                android:inputType="numberSigned" />
+                <EditText
+                    android:id="@+id/roundPointsEditView"
+                    style="@style/InputEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:ems="10"
+                    android:hint="0"
+                    android:inputType="numberSigned" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:id="@+id/teamsLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical">
 
-            <ListView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/teamsList"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingVertical="10sp">
-
-            </ListView>
+                android:layout_height="wrap_content" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -165,6 +168,7 @@
                 android:insetTop="0sp"
                 android:insetRight="0sp"
                 android:insetBottom="0sp"
+                android:onClick="addTeam"
                 android:paddingVertical="0sp"
                 android:text="+ Add Team"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
@@ -186,6 +190,8 @@
         android:layout_marginStart="30dp"
         android:layout_marginTop="50dp"
         android:layout_marginEnd="30dp"
+        android:layout_marginBottom="20dp"
+        android:onClick="createGame"
         android:text="Create Game"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"

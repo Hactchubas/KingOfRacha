@@ -31,6 +31,7 @@ class OffTeamAdapter(var teamsList: MutableList<Team>, var context: Activity) :
     override fun onBindViewHolder(holder: OffTeam, position: Int) {
         val currentItem = teamsList[position]
         holder.points.text = currentItem.points.toString()
+        holder.points.setBackgroundColor(currentItem.color)
         holder.players.text = currentItem.playersString()
     }
 

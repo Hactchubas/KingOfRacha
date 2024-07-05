@@ -1,20 +1,28 @@
 package com.example.kingofracha.activity
 
+import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.ListView
+import android.util.Log
+import android.view.View
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.kingofracha.R
+import com.example.kingofracha.adapter.ConfigTeamAdapter
 import com.example.kingofracha.classes.Team
+import kotlin.random.Random
 
 class GameConfigActivity : AppCompatActivity() {
-    private lateinit var teamsList: ListView
-    private val teams = mutableListOf<Team>(
-        Team(arrayListOf("Carla","Kauã"))
-    )
+    private lateinit var teamsListView: RecyclerView
+    private  var configTeamAdapter: ConfigTeamAdapter? = null
+    private val configTeamsList = mutableListOf<Team>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,16 +34,65 @@ class GameConfigActivity : AppCompatActivity() {
             insets
         }
 
-        teamsList = findViewById(R.id.teamsList)
-        // Cria o adaptador da lista
-        var playersNames = mutableListOf("Kauã | Carla")
-        var adapter = ArrayAdapter(
-            this,
-            R.layout.teams_list_layout,
-            R.id.playersNames,
-            playersNames
+        teamsListView = findViewById(R.id.teamsList)
+        // Config Adapter
+        configTeamAdapter = ConfigTeamAdapter(configTeamsList, this)
+        // Config RecyclerView
+        val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
+        teamsListView.setHasFixedSize(false)
+        teamsListView.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
+        teamsListView.layoutManager = layoutManager
+        teamsListView.adapter = configTeamAdapter
+
+    }
+
+
+    fun addTeam(view: View){
+        var captain =  findViewById<TextView>(R.id.player1Text)
+        var partner =  findViewById<TextView>(R.id.player2Text)
+
+        var newPlayers = arrayListOf<String>(
+            captain.text.toString(),
+            partner.text.toString()
+        )
+        val newTeam = Team(
+            newPlayers,
+            0,
+            Color.argb(
+                255,
+                Random.nextInt(256),
+                Random.nextInt(256),
+                Random.nextInt(256),
+            )
         )
 
-        teamsList.adapter = adapter
+        configTeamsList.add(newTeam)
+        configTeamAdapter?.notifyItemInserted(configTeamsList.size - 1)
+
+        captain.text = ""
+        partner.text = ""
+    }
+
+    fun createGame(view: View){
+        val roundsText = findViewById<TextView>(R.id.roundsEditView).text.toString()
+        val rounds : Int? = if (roundsText == "") null else Integer.valueOf(roundsText)
+
+//        val roundTimeTextView = findViewById<TextView>(R.id.roundTimeTextView).text.toString()
+//        val roundTime = Time.valueOf(roundTimeTextView)
+
+        val pointsText = findViewById<TextView>(R.id.roundPointsEditView).text.toString()
+        val points : Int? = if (pointsText == "") null else Integer.valueOf(pointsText)
+
+        Log.v("K_DEBUG - Config","Pontos Text: $pointsText, Rounds: $roundsText")
+        Log.v("K_DEBUG - Config","Pontos: $points, Rounds: $rounds")
+        if (configTeamsList.size > 2 && rounds != null  && points != null ){
+            val intent = Intent(this, GameActivity::class.java).apply {
+//                putExtra("teams", configTeamsList.toTypedArray())
+                putExtra("rounds", rounds)
+//                putExtra("roundTime", roundTime)
+                putExtra("points", points)
+            }
+            startActivity(intent)
+        }
     }
 }

@@ -19,6 +19,10 @@ import com.example.kingofracha.classes.Team
 
 class GameActivity : AppCompatActivity() {
 
+    private var round = 0
+    private var totalrounds = 0
+    private var pointsForRoundWin = 0
+
     private var offTeams = mutableListOf(
         Team(arrayListOf("Kauã", "Carla")),
         Team(arrayListOf("Matheus", "Feyman")),
@@ -39,6 +43,7 @@ class GameActivity : AppCompatActivity() {
     private lateinit var crownTeamPoints: TextView
     private lateinit var challTeamPlayers: TextView
     private lateinit var challTeamPoints: TextView
+    private lateinit var roundView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,22 +55,21 @@ class GameActivity : AppCompatActivity() {
             insets
         }
 
+        val extras = intent.extras
+        totalrounds = extras!!.getInt("rounds")
+        pointsForRoundWin = extras!!.getInt("points")
+        Log.v("K_DEBUG - Rounds", totalrounds.toString())
+        Log.v("K_DEBUG - Points", pointsForRoundWin.toString())
 
-        // Initialize Crown and Challengers
-        crownTeamPlayers = findViewById<TextView>(R.id.crownTeamPlayers)
-        crownTeamPoints = findViewById<TextView>(R.id.crownTeamPoints)
-        challTeamPlayers = findViewById<TextView>(R.id.challTeamPlayers)
-        challTeamPoints = findViewById<TextView>(R.id.challTeamPoints)
 
+        intializeViews()
 
         crown = offTeams.removeFirst()
-
         currentGameState = GameState(offTeams, crown)
 
         //Update game
         updateState(currentGameState)
 
-        offCourtTeamsView = findViewById(R.id.offCourtTeams)
         // Config Adpter
         offTeamAdapter = OffTeamAdapter(offTeams, this)
         // Config RecyclerView
@@ -74,6 +78,18 @@ class GameActivity : AppCompatActivity() {
         offCourtTeamsView.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
         offCourtTeamsView.layoutManager = layoutManager
         offCourtTeamsView.adapter = offTeamAdapter
+
+    }
+
+    fun intializeViews(){
+        //
+        offCourtTeamsView = findViewById(R.id.offCourtTeams)
+        roundView = findViewById(R.id.currentRound)
+        // Initialize Crown and Challengers
+        crownTeamPlayers = findViewById<TextView>(R.id.crownTeamPlayers)
+        crownTeamPoints = findViewById<TextView>(R.id.crownTeamPoints)
+        challTeamPlayers = findViewById<TextView>(R.id.challTeamPlayers)
+        challTeamPoints = findViewById<TextView>(R.id.challTeamPoints)
 
     }
 
@@ -104,10 +120,12 @@ class GameActivity : AppCompatActivity() {
 
 
         offTeams = currentGameState.orderedTeams
-        offTeamAdapter?.notifyDataSetChanged()
+        offTeamAdapter?.notifyItemInserted(offTeams.size -1)
+        offTeamAdapter?.notifyItemRemoved(0)
 
-        history.add(GameState(newGameState.orderedTeams, newGameState.crown))
-        Log.v("MYHISTORY", history.toString())
+        history.add(GameState(newGameState))
+//        Log.v("MYHISTORY", history.toString())
+        Log.v("MYHISTORY - Off Teams", offTeams.toString())
     }
 
 }
