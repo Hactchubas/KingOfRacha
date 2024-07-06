@@ -61,14 +61,15 @@ class GameActivity : AppCompatActivity() {
         Log.v("K_DEBUG - Rounds", totalrounds.toString())
         Log.v("K_DEBUG - Points", pointsForRoundWin.toString())
 
-
         intializeViews()
 
         crown = offTeams.removeFirst()
         currentGameState = GameState(offTeams, crown)
+        challenger = Team(currentGameState.challenger)
 
         //Update game
-        updateState(currentGameState)
+//        updateState(currentGameState)
+        updateState()
 
         // Config Adpter
         offTeamAdapter = OffTeamAdapter(offTeams, this)
@@ -94,38 +95,47 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun CrownPoint(view: View) {
-        var newGameState = GameState(currentGameState)
-        newGameState.crown.points++
-        val last = newGameState.orderedTeams.removeFirst()
-        newGameState.orderedTeams.add(last)
-        updateState(newGameState)
+//        var oldGameState = GameState(currentGameState)
+        currentGameState.crown.points++
+
+
+        var last = challenger
+        challenger = offTeams.removeFirst()
+        offTeamAdapter?.notifyItemRemoved(0)
+        offTeams.add(last)
+        offTeamAdapter?.notifyItemInserted(offTeams.size - 1)
+
+        updateState()
     }
     fun ChallPoint(view: View) {
-        var newGameState = GameState(currentGameState)
-        val chall = newGameState.orderedTeams.removeFirst()
-        newGameState.orderedTeams.add(newGameState.crown)
-        newGameState.crown = chall
-        updateState(newGameState)
+//        var oldGameState = GameState(currentGameState)
+
+        val last = crown
+        crown = challenger
+        challenger = offTeams.removeFirst()
+        offTeamAdapter?.notifyItemRemoved(0)
+        offTeams.add(last)
+        offTeamAdapter?.notifyItemInserted(offTeams.size - 1)
+
+        updateState()
     }
 
-    fun updateState(newGameState: GameState) {
-        currentGameState = newGameState
+    fun updateState() {
+        currentGameState.orderedTeams = offTeams
+        currentGameState.challenger = challenger
+        currentGameState.crown = crown
 
+        history.add(GameState(currentGameState))
         // Crowned Team
         crownTeamPlayers.text = currentGameState.crown.playersString()
         crownTeamPoints.text = "${currentGameState.crown.points}"
         // Challenger Team
-        challTeamPlayers.text = currentGameState.orderedTeams.first().playersString()
-        challTeamPoints.text = "${currentGameState.orderedTeams.first().points}"
+        challTeamPlayers.text = currentGameState.challenger.playersString()
+        challTeamPoints.text = "${currentGameState.challenger.points}"
 
 
-        offTeams = currentGameState.orderedTeams
-        offTeamAdapter?.notifyItemInserted(offTeams.size -1)
-        offTeamAdapter?.notifyItemRemoved(0)
-
-        history.add(GameState(newGameState))
-//        Log.v("MYHISTORY", history.toString())
-        Log.v("MYHISTORY - Off Teams", offTeams.toString())
+//        history.add(GameState(oldGameState))
+        Log.v("MYHISTORY", history.joinToString(""))
     }
 
 }
