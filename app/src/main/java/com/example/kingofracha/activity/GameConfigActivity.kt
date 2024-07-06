@@ -3,6 +3,7 @@ package com.example.kingofracha.activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.kingofracha.R
 import com.example.kingofracha.adapter.ConfigTeamAdapter
 import com.example.kingofracha.classes.Team
+import java.util.ArrayList
 import kotlin.random.Random
 
 class GameConfigActivity : AppCompatActivity() {
@@ -87,7 +89,7 @@ class GameConfigActivity : AppCompatActivity() {
         Log.v("K_DEBUG - Config","Pontos: $points, Rounds: $rounds")
         if (configTeamsList.size > 2 && rounds != null  && points != null ){
             val intent = Intent(this, GameActivity::class.java).apply {
-//                putExtra("teams", configTeamsList.toTypedArray())
+                putParcelableArrayListExtra("teams",configTeamsList as ArrayList<out Parcelable>)
                 putExtra("rounds", rounds)
 //                putExtra("roundTime", roundTime)
                 putExtra("points", points)

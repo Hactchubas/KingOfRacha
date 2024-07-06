@@ -1,6 +1,7 @@
 package com.example.kingofracha.activity
 
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
@@ -23,13 +24,7 @@ class GameActivity : AppCompatActivity() {
     private var totalrounds = 0
     private var pointsForRoundWin = 0
 
-    private var offTeams = mutableListOf(
-        Team(arrayListOf("Kauã", "Carla")),
-        Team(arrayListOf("Matheus", "Feyman")),
-        Team(arrayListOf("Eduardo", "Thiago")),
-        Team(arrayListOf("Caíque", "Mary")),
-        Team(arrayListOf("Arlen", "Iury")),
-    )
+    private var offTeams : MutableList<Team> = mutableListOf()
 
     private var offTeamAdapter: OffTeamAdapter? = null
     private lateinit var crown: Team
@@ -41,8 +36,10 @@ class GameActivity : AppCompatActivity() {
     private lateinit var offCourtTeamsView: RecyclerView
     private lateinit var crownTeamPlayers: TextView
     private lateinit var crownTeamPoints: TextView
+    private lateinit var crownTeamField: View
     private lateinit var challTeamPlayers: TextView
     private lateinit var challTeamPoints: TextView
+    private lateinit var challTeamField: View
     private lateinit var roundView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,12 +51,15 @@ class GameActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-        val extras = intent.extras
-        totalrounds = extras!!.getInt("rounds")
-        pointsForRoundWin = extras!!.getInt("points")
-        Log.v("K_DEBUG - Rounds", totalrounds.toString())
-        Log.v("K_DEBUG - Points", pointsForRoundWin.toString())
+        if (intent.extras != null) {
+            val extras = intent.extras
+            offTeams = extras!!.getParcelableArrayList<Team>("teams")?.toMutableList()!!
+            totalrounds = extras!!.getInt("rounds")
+            pointsForRoundWin = extras!!.getInt("points")
+            Log.v("K_DEBUG - Rounds", totalrounds.toString())
+            Log.v("K_DEBUG - Points", pointsForRoundWin.toString())
+            Log.v("K_DEBUG - Teams", offTeams.toString())
+        }
 
         intializeViews()
 
@@ -68,9 +68,12 @@ class GameActivity : AppCompatActivity() {
         challenger = Team(currentGameState.challenger)
 
         //Update game
-//        updateState(currentGameState)
         updateState()
+        setupAdapter()
 
+    }
+
+    fun setupAdapter(){
         // Config Adpter
         offTeamAdapter = OffTeamAdapter(offTeams, this)
         // Config RecyclerView
@@ -79,7 +82,6 @@ class GameActivity : AppCompatActivity() {
         offCourtTeamsView.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
         offCourtTeamsView.layoutManager = layoutManager
         offCourtTeamsView.adapter = offTeamAdapter
-
     }
 
     fun intializeViews(){
@@ -89,15 +91,15 @@ class GameActivity : AppCompatActivity() {
         // Initialize Crown and Challengers
         crownTeamPlayers = findViewById<TextView>(R.id.crownTeamPlayers)
         crownTeamPoints = findViewById<TextView>(R.id.crownTeamPoints)
+        crownTeamField = findViewById<View>(R.id.crown)
         challTeamPlayers = findViewById<TextView>(R.id.challTeamPlayers)
         challTeamPoints = findViewById<TextView>(R.id.challTeamPoints)
+        challTeamField = findViewById<View>(R.id.challenger)
 
     }
 
     fun CrownPoint(view: View) {
-//        var oldGameState = GameState(currentGameState)
         currentGameState.crown.points++
-
 
         var last = challenger
         challenger = offTeams.removeFirst()
@@ -108,8 +110,6 @@ class GameActivity : AppCompatActivity() {
         updateState()
     }
     fun ChallPoint(view: View) {
-//        var oldGameState = GameState(currentGameState)
-
         val last = crown
         crown = challenger
         challenger = offTeams.removeFirst()
@@ -129,13 +129,12 @@ class GameActivity : AppCompatActivity() {
         // Crowned Team
         crownTeamPlayers.text = currentGameState.crown.playersString()
         crownTeamPoints.text = "${currentGameState.crown.points}"
+        crownTeamField.setBackgroundColor(currentGameState.crown.color)
         // Challenger Team
         challTeamPlayers.text = currentGameState.challenger.playersString()
         challTeamPoints.text = "${currentGameState.challenger.points}"
+        challTeamField.setBackgroundColor(currentGameState.challenger.color)
 
-
-//        history.add(GameState(oldGameState))
-        Log.v("MYHISTORY", history.joinToString(""))
     }
 
 }
