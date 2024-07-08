@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.kingofracha.R
 import com.example.kingofracha.adapter.ConfigTeamAdapter
 import com.example.kingofracha.classes.Team
+import com.example.kingofracha.classes.data.GameConfig
 import java.util.ArrayList
 import kotlin.random.Random
 
@@ -89,10 +90,7 @@ class GameConfigActivity : AppCompatActivity() {
         Log.v("K_DEBUG - Config","Pontos: $points, Rounds: $rounds")
         if (configTeamsList.size > 2 && rounds != null  && points != null ){
             val intent = Intent(this, GameActivity::class.java).apply {
-                putParcelableArrayListExtra("teams",configTeamsList as ArrayList<out Parcelable>)
-                putExtra("rounds", rounds)
-//                putExtra("roundTime", roundTime)
-                putExtra("points", points)
+                putExtra("config", GameConfig(rounds, points, configTeamsList as ArrayList<Team>))
             }
             startActivity(intent)
         }

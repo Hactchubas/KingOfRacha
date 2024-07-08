@@ -1,9 +1,13 @@
 package com.example.kingofracha.classes
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class GameState(
     var orderedTeams: MutableList<Team>,
     var crown: Team,
-) {
+) : Parcelable {
     constructor(gameState: GameState) : this(
         mutableListOf<Team>().apply {
             add(Team(gameState.challenger))

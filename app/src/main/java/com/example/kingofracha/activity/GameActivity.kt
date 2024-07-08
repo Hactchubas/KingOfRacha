@@ -17,6 +17,7 @@ import com.example.kingofracha.R
 import com.example.kingofracha.adapter.OffTeamAdapter
 import com.example.kingofracha.classes.GameState
 import com.example.kingofracha.classes.Team
+import com.example.kingofracha.classes.data.GameConfig
 
 class GameActivity : AppCompatActivity() {
 
@@ -53,9 +54,10 @@ class GameActivity : AppCompatActivity() {
         }
         if (intent.extras != null) {
             val extras = intent.extras
-            offTeams = extras!!.getParcelableArrayList<Team>("teams")?.toMutableList()!!
-            totalrounds = extras!!.getInt("rounds")
-            pointsForRoundWin = extras!!.getInt("points")
+            val gameConfig : GameConfig = extras?.getParcelable<GameConfig>("config")!!
+            offTeams = gameConfig.teams
+            totalrounds = gameConfig.rounds
+            pointsForRoundWin = gameConfig.roundPoints
             Log.v("K_DEBUG - Rounds", totalrounds.toString())
             Log.v("K_DEBUG - Points", pointsForRoundWin.toString())
             Log.v("K_DEBUG - Teams", offTeams.toString())
