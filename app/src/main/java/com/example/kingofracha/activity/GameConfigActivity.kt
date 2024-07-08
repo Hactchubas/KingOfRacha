@@ -3,7 +3,6 @@ package com.example.kingofracha.activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
@@ -80,8 +79,7 @@ class GameConfigActivity : AppCompatActivity() {
         val roundsText = findViewById<TextView>(R.id.roundsEditView).text.toString()
         val rounds : Int? = if (roundsText == "") null else Integer.valueOf(roundsText)
 
-//        val roundTimeTextView = findViewById<TextView>(R.id.roundTimeTextView).text.toString()
-//        val roundTime = Time.valueOf(roundTimeTextView)
+        val roundTime = findViewById<TextView>(R.id.roundTimeEditView).text.toString()
 
         val pointsText = findViewById<TextView>(R.id.roundPointsEditView).text.toString()
         val points : Int? = if (pointsText == "") null else Integer.valueOf(pointsText)
@@ -90,7 +88,7 @@ class GameConfigActivity : AppCompatActivity() {
         Log.v("K_DEBUG - Config","Pontos: $points, Rounds: $rounds")
         if (configTeamsList.size > 2 && rounds != null  && points != null ){
             val intent = Intent(this, GameActivity::class.java).apply {
-                putExtra("config", GameConfig(rounds, points, configTeamsList as ArrayList<Team>))
+                putExtra("config", GameConfig(rounds, roundTime, points, configTeamsList as ArrayList<Team>))
             }
             startActivity(intent)
         }

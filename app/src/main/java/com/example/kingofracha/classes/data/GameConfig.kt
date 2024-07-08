@@ -7,6 +7,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class GameConfig(
     var rounds: Int,
+    var roundTime: String,
     var roundPoints: Int,
     var teams: ArrayList<Team>,) : Parcelable {
 }

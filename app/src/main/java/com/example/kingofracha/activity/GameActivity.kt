@@ -1,7 +1,7 @@
 package com.example.kingofracha.activity
 
 import android.os.Bundle
-import android.os.Parcelable
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
@@ -43,6 +43,20 @@ class GameActivity : AppCompatActivity() {
     private lateinit var challTeamField: View
     private lateinit var roundView: TextView
 
+    private lateinit var timerTextView: TextView
+    private var timerHandler = Handler()
+    private var roundTime: Long = 0
+    private var startTime: Long = 0
+    private var timerRunnable = object : Runnable {
+        override fun run(){
+            var currentTime = System.currentTimeMillis()
+            val millis: Long = roundTime - (currentTime -startTime)
+            timerTextView.text = convertMillisToString(millis)
+            timerHandler.postDelayed(this, 500)
+        }
+    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -57,13 +71,17 @@ class GameActivity : AppCompatActivity() {
             val gameConfig : GameConfig = extras?.getParcelable<GameConfig>("config")!!
             offTeams = gameConfig.teams
             totalrounds = gameConfig.rounds
+            roundTime = convertStringToMillis(gameConfig.roundTime)
             pointsForRoundWin = gameConfig.roundPoints
             Log.v("K_DEBUG - Rounds", totalrounds.toString())
+            Log.v("K_DEBUG - Time", roundTime.toString())
             Log.v("K_DEBUG - Points", pointsForRoundWin.toString())
             Log.v("K_DEBUG - Teams", offTeams.toString())
         }
 
+
         intializeViews()
+        setupTimer()
 
         crown = offTeams.removeFirst()
         currentGameState = GameState(offTeams, crown)
@@ -75,9 +93,40 @@ class GameActivity : AppCompatActivity() {
 
     }
 
+    override fun onPause() {
+        super.onPause()
+        timerHandler.removeCallbacks(timerRunnable)
+    }
+
+    fun convertStringToMillis(timeString : String): Long{
+        val minSec = timeString.split(":").map {
+            it.toLong()
+        }
+        return minSec[0]*60000 + minSec[1]*1000
+    }
+    fun convertMillisToString(millis : Long): String{
+        var seconds = (millis / 1000).toInt()
+        val minutes = seconds / 60
+        seconds %= 60
+        return String.format("%d:%02d", minutes, seconds)
+    }
+
+    fun setupTimer(){
+        timerTextView.setOnClickListener {
+            if (timerTextView.text == "Start Game"){
+                startTime = System.currentTimeMillis()
+                timerHandler.postDelayed(timerRunnable, 0)
+            } else{
+                timerHandler.removeCallbacks(timerRunnable)
+            }
+
+        }
+    }
+
     fun setupAdapter(){
         // Config Adpter
         offTeamAdapter = OffTeamAdapter(offTeams, this)
+
         // Config RecyclerView
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
         offCourtTeamsView.setHasFixedSize(true)
@@ -97,6 +146,9 @@ class GameActivity : AppCompatActivity() {
         challTeamPlayers = findViewById<TextView>(R.id.challTeamPlayers)
         challTeamPoints = findViewById<TextView>(R.id.challTeamPoints)
         challTeamField = findViewById<View>(R.id.challenger)
+
+        // Initialize Timer TextView
+        timerTextView = findViewById(R.id.time)
 
     }
 
