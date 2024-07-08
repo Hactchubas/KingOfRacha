@@ -17,6 +17,7 @@
         android:paddingHorizontal="30sp"
         app:layout_constraintBottom_toTopOf="@+id/createGameButton"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -120,63 +121,94 @@
         <LinearLayout
             android:id="@+id/teamsLinearLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
+            android:layout_height="match_parent"
+            android:gravity="start"
             android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/teamsList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/teamsTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="10sp">
-
-                <EditText
-                    android:id="@+id/player1Text"
-                    style="@style/InputEdit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:hint="Captain"
-                    android:inputType="text"
-                    android:textSize="20sp" />
-
-                <EditText
-                    android:id="@+id/player2Text"
-                    style="@style/InputEdit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ems="10"
-                    android:hint="Partner"
-                    android:inputType="text"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
-            <Button
-                android:id="@+id/addTeamButton"
-                style="@style/DeafultButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_marginBottom="15sp"
                 android:layout_weight="0"
-                android:insetLeft="0sp"
-                android:insetTop="0sp"
-                android:insetRight="0sp"
-                android:insetBottom="0sp"
-                android:onClick="addTeam"
-                android:paddingVertical="0sp"
-                android:text="+ Add Team"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColorLink="#00FFFFFF"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:typeface="normal"
-                app:iconPadding="0sp" />
+                android:includeFontPadding="false"
+                android:padding="0sp"
+                android:text="Teams"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:textColor="@color/primary_text"
+                android:textIsSelectable="false"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/teamsList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0"
+                        android:overScrollMode="always" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0"
+                        android:orientation="horizontal">
+
+                        <EditText
+                            android:id="@+id/player1Text"
+                            style="@style/InputEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:ems="10"
+                            android:hint="Captain"
+                            android:inputType="text"
+                            android:textSize="20sp" />
+
+                        <EditText
+                            android:id="@+id/player2Text"
+                            style="@style/InputEdit"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:ems="10"
+                            android:hint="Partner"
+                            android:inputType="text"
+                            android:textSize="20sp" />
+
+                        <Button
+                            android:id="@+id/addTeamButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0"
+                            android:includeFontPadding="false"
+                            android:insetLeft="0sp"
+                            android:insetTop="0sp"
+                            android:insetRight="0sp"
+                            android:insetBottom="0sp"
+                            android:onClick="addTeam"
+                            android:text="+"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                            android:textColor="@color/primary_text"
+                            android:textColorLink="#00FFFFFF"
+                            android:textSize="24sp"
+                            android:textStyle="bold"
+                            android:typeface="normal"
+                            app:iconPadding="0sp" />
+
+                    </LinearLayout>
+                </LinearLayout>
+            </ScrollView>
 
         </LinearLayout>
 
