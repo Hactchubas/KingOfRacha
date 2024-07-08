@@ -23,7 +23,7 @@ class GameActivity : AppCompatActivity() {
 
     private var round = 0
     private var totalrounds = 0
-    private var pointsForRoundWin = 0
+    private var pointsForRoundWin : Int? = null
 
     private var offTeams : MutableList<Team> = mutableListOf()
 
@@ -113,7 +113,7 @@ class GameActivity : AppCompatActivity() {
 
     fun setupTimer(){
         timerTextView.setOnClickListener {
-            if (timerTextView.text == "Start Game"){
+            if(!timerHandler.hasCallbacks(timerRunnable)){
                 startTime = System.currentTimeMillis()
                 timerHandler.postDelayed(timerRunnable, 0)
             } else{
