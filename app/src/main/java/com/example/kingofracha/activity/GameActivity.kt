@@ -21,18 +21,25 @@ import com.example.kingofracha.classes.data.GameConfig
 
 class GameActivity : AppCompatActivity() {
 
+    private lateinit var gameConfig : GameConfig
     private var round = 0
     private var totalrounds = 0
-    private var pointsForRoundWin : Int? = null
+    private var pointsForRoundWin: Int? = null
 
-    private var offTeams : MutableList<Team> = mutableListOf()
+    private var offTeams: MutableList<Team> = mutableListOf(
+        Team(arrayListOf("Kauã", "Carla")),
+        Team(arrayListOf("Matheus", "Feyman")),
+        Team(arrayListOf("Eduardo", "Thiago")),
+        Team(arrayListOf("Caíque", "Mary")),
+        Team(arrayListOf("Arlen", "Iury")),
+    )
 
     private var offTeamAdapter: OffTeamAdapter? = null
     private lateinit var crown: Team
     private lateinit var challenger: Team
     private var history = mutableListOf<GameState>()
     private lateinit var currentGameState: GameState
-    private var gameStateIndex: Int =0
+    private var gameStateIndex: Int = 0
 
     private lateinit var offCourtTeamsView: RecyclerView
     private lateinit var crownTeamPlayers: TextView
@@ -47,10 +54,11 @@ class GameActivity : AppCompatActivity() {
     private var timerHandler = Handler()
     private var roundTime: Long = 0
     private var startTime: Long = 0
+    private var remainingTime: Long = 0
     private var timerRunnable = object : Runnable {
-        override fun run(){
+        override fun run() {
             var currentTime = System.currentTimeMillis()
-            val millis: Long = roundTime - (currentTime -startTime)
+            val millis: Long = remainingTime  - (currentTime - startTime)
             timerTextView.text = convertMillisToString(millis)
             timerHandler.postDelayed(this, 500)
         }
@@ -68,16 +76,17 @@ class GameActivity : AppCompatActivity() {
         }
         if (intent.extras != null) {
             val extras = intent.extras
-            val gameConfig : GameConfig = extras?.getParcelable<GameConfig>("config")!!
+            gameConfig = extras?.getParcelable("config")!!
             offTeams = gameConfig.teams
             totalrounds = gameConfig.rounds
             roundTime = convertStringToMillis(gameConfig.roundTime)
+            remainingTime = roundTime
             pointsForRoundWin = gameConfig.roundPoints
-            Log.v("K_DEBUG - Rounds", totalrounds.toString())
-            Log.v("K_DEBUG - Time", roundTime.toString())
-            Log.v("K_DEBUG - Points", pointsForRoundWin.toString())
-            Log.v("K_DEBUG - Teams", offTeams.toString())
         }
+        totalrounds = 2
+        roundTime = convertStringToMillis("12:21")
+        remainingTime = roundTime
+        pointsForRoundWin = 15
 
 
         intializeViews()
@@ -98,32 +107,36 @@ class GameActivity : AppCompatActivity() {
         timerHandler.removeCallbacks(timerRunnable)
     }
 
-    fun convertStringToMillis(timeString : String): Long{
+    fun convertStringToMillis(timeString: String): Long {
         val minSec = timeString.split(":").map {
             it.toLong()
         }
-        return minSec[0]*60000 + minSec[1]*1000
+        return minSec[0] * 60000 + minSec[1] * 1000
     }
-    fun convertMillisToString(millis : Long): String{
+
+    fun convertMillisToString(millis: Long): String {
         var seconds = (millis / 1000).toInt()
         val minutes = seconds / 60
         seconds %= 60
         return String.format("%d:%02d", minutes, seconds)
     }
 
-    fun setupTimer(){
+    fun setupTimer() {
         timerTextView.setOnClickListener {
-            if(!timerHandler.hasCallbacks(timerRunnable)){
+            if (!timerHandler.hasCallbacks(timerRunnable)) {
                 startTime = System.currentTimeMillis()
                 timerHandler.postDelayed(timerRunnable, 0)
-            } else{
+            } else {
+                var currentTime = System.currentTimeMillis()
+                remainingTime -= (currentTime - startTime)
                 timerHandler.removeCallbacks(timerRunnable)
+                timerTextView.text = "(Paused) ${timerTextView.text}"
             }
 
         }
     }
 
-    fun setupAdapter(){
+    fun setupAdapter() {
         // Config Adpter
         offTeamAdapter = OffTeamAdapter(offTeams, this)
 
@@ -135,7 +148,7 @@ class GameActivity : AppCompatActivity() {
         offCourtTeamsView.adapter = offTeamAdapter
     }
 
-    fun intializeViews(){
+    fun intializeViews() {
         //
         offCourtTeamsView = findViewById(R.id.offCourtTeams)
         roundView = findViewById(R.id.currentRound)
@@ -163,6 +176,7 @@ class GameActivity : AppCompatActivity() {
 
         updateState()
     }
+
     fun ChallPoint(view: View) {
         val last = crown
         crown = challenger
