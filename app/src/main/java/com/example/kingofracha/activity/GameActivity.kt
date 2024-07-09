@@ -2,10 +2,12 @@ package com.example.kingofracha.activity
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -16,13 +18,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.kingofracha.R
 import com.example.kingofracha.adapter.OffTeamAdapter
 import com.example.kingofracha.classes.GameState
+import com.example.kingofracha.classes.RoundHistory
 import com.example.kingofracha.classes.Team
 import com.example.kingofracha.classes.data.GameConfig
+import kotlin.math.max
 
 class GameActivity : AppCompatActivity() {
 
-    private lateinit var gameConfig : GameConfig
-    private var round = 0
+    private var endRound = false
+    private lateinit var gameConfig: GameConfig
+    private var round = 1
     private var totalrounds = 0
     private var pointsForRoundWin: Int? = null
 
@@ -37,7 +42,7 @@ class GameActivity : AppCompatActivity() {
     private var offTeamAdapter: OffTeamAdapter? = null
     private lateinit var crown: Team
     private lateinit var challenger: Team
-    private var history = mutableListOf<GameState>()
+    private var gameHistory = mutableListOf(RoundHistory())
     private lateinit var currentGameState: GameState
     private var gameStateIndex: Int = 0
 
@@ -51,16 +56,34 @@ class GameActivity : AppCompatActivity() {
     private lateinit var roundView: TextView
 
     private lateinit var timerTextView: TextView
-    private var timerHandler = Handler()
     private var roundTime: Long = 0
     private var startTime: Long = 0
     private var remainingTime: Long = 0
+    private var timerHandler = Handler(Looper.getMainLooper())
     private var timerRunnable = object : Runnable {
         override fun run() {
             var currentTime = System.currentTimeMillis()
-            val millis: Long = remainingTime  - (currentTime - startTime)
-            timerTextView.text = convertMillisToString(millis)
-            timerHandler.postDelayed(this, 500)
+            val millis: Long = remainingTime - (currentTime - startTime)
+            if (millis > 0) {
+                timerTextView.text = convertMillisToString(millis)
+                timerHandler.postDelayed(this, 500)
+            } else {
+                remainingTime = 0
+                timerTextView.text = "0:00"
+                timerHandler.removeCallbacks(this)
+            }
+        }
+    }
+
+    private var gameEndHandler = Handler(Looper.getMainLooper())
+    private var gameEndRunnable = object : Runnable {
+        override fun run() {
+            endRound = when {
+                pointsForRoundWin != null && crown.points >= pointsForRoundWin!! -> true
+                remainingTime <= 0 -> true
+                else -> false
+            }
+            if (endRound) endRoundWacther() else gameEndHandler.postDelayed(this, 500)
         }
     }
 
@@ -83,11 +106,10 @@ class GameActivity : AppCompatActivity() {
             remainingTime = roundTime
             pointsForRoundWin = gameConfig.roundPoints
         }
-        totalrounds = 2
-        roundTime = convertStringToMillis("12:21")
+        roundTime = convertStringToMillis("00:05")
+        totalrounds = 3
+        pointsForRoundWin = 55
         remainingTime = roundTime
-        pointsForRoundWin = 15
-
 
         intializeViews()
         setupTimer()
@@ -99,12 +121,27 @@ class GameActivity : AppCompatActivity() {
         //Update game
         updateState()
         setupAdapter()
-
+        endRoundWacther()
     }
 
     override fun onPause() {
         super.onPause()
         timerHandler.removeCallbacks(timerRunnable)
+        gameEndHandler.removeCallbacks(gameEndRunnable)
+    }
+
+    fun endRoundWacther() {//
+        if (!endRound) {
+            gameEndHandler.postDelayed(gameEndRunnable, 500)
+        } else if (round >= totalrounds) {
+            timerTextView.text = "Game End"
+            Log.v("K_DEBUG", gameHistory.toString())
+        } else {
+            timerTextView.text = "Next Round"
+            round++
+            gameHistory[round - 2].endTime = System.currentTimeMillis()
+        }
+
     }
 
     fun convertStringToMillis(timeString: String): Long {
@@ -123,17 +160,45 @@ class GameActivity : AppCompatActivity() {
 
     fun setupTimer() {
         timerTextView.setOnClickListener {
-            if (!timerHandler.hasCallbacks(timerRunnable)) {
-                startTime = System.currentTimeMillis()
-                timerHandler.postDelayed(timerRunnable, 0)
-            } else {
-                var currentTime = System.currentTimeMillis()
-                remainingTime -= (currentTime - startTime)
-                timerHandler.removeCallbacks(timerRunnable)
-                timerTextView.text = "(Paused) ${timerTextView.text}"
+            if (round > gameHistory.size) {
+                gameHistory[round - 2].endTime = System.currentTimeMillis()
             }
-
+            if (!endRound) {
+                if (!timerHandler.hasCallbacks(timerRunnable)) {
+                    startTime = System.currentTimeMillis()
+                    timerHandler.postDelayed(timerRunnable, 0)
+                } else {
+                    var currentTime = System.currentTimeMillis()
+                    remainingTime -= (currentTime - startTime)
+                    timerHandler.removeCallbacks(timerRunnable)
+                    timerTextView.text = "(Paused) ${timerTextView.text}"
+                }
+            } else if (round <= totalrounds) {
+                setupNewRound()
+            }
         }
+    }
+
+    private fun setupNewRound() {
+        timerTextView.text = "Start Round"
+        roundView.text = "Round ${(round)}"
+        remainingTime = roundTime
+        endRound = false
+
+        offTeams.apply {
+            add(currentGameState.crown)
+            add(currentGameState.challenger)
+            sortByDescending {
+                it.points
+            }
+        }
+        crown = offTeams.removeFirst()
+        challenger = offTeams.removeFirst()
+        gameHistory.add(RoundHistory())
+
+        gameEndHandler.postDelayed(gameEndRunnable, 500)
+        offTeamAdapter?.notifyDataSetChanged()
+        updateState()
     }
 
     fun setupAdapter() {
@@ -166,6 +231,8 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun CrownPoint(view: View) {
+        if (endRound) return
+
         currentGameState.crown.points++
 
         var last = challenger
@@ -178,6 +245,8 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun ChallPoint(view: View) {
+        if (endRound) return
+
         val last = crown
         crown = challenger
         challenger = offTeams.removeFirst()
@@ -193,7 +262,7 @@ class GameActivity : AppCompatActivity() {
         currentGameState.challenger = challenger
         currentGameState.crown = crown
 
-        history.add(GameState(currentGameState))
+        gameHistory[round - 1].history.add(GameState(currentGameState))
         // Crowned Team
         crownTeamPlayers.text = currentGameState.crown.playersString()
         crownTeamPoints.text = "${currentGameState.crown.points}"

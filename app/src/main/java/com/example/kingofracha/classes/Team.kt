@@ -24,4 +24,8 @@ class Team (var players: ArrayList<String>, var points: Int = 0, var color: Int 
         result += "${players[range]}"
         return result
     }
+
+    fun clone() : Team{
+        return Team(this)
+    }
 }
