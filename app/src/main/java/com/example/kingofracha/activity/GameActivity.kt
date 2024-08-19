@@ -25,7 +25,14 @@ import kotlin.math.max
 
 class GameActivity : AppCompatActivity() {
 
-    private var endRound = false
+
+    private val ROUND_PAUSED = 4
+    private val ROUND_END = 3
+    private val ROUND_RUNNING = 2
+    private val ROUND_WAITING = 1
+    private val GAME_END = 0
+    private var roundState = 1
+
     private lateinit var gameConfig: GameConfig
     private var round = 1
     private var totalrounds = 0
@@ -64,12 +71,11 @@ class GameActivity : AppCompatActivity() {
         override fun run() {
             var currentTime = System.currentTimeMillis()
             val millis: Long = remainingTime - (currentTime - startTime)
-            if (millis > 0) {
+            if (millis > 0 && roundState != ROUND_END) {
                 timerTextView.text = convertMillisToString(millis)
                 timerHandler.postDelayed(this, 500)
-            } else {
+            } else if (roundState != ROUND_WAITING) {
                 remainingTime = 0
-                timerTextView.text = "0:00"
                 timerHandler.removeCallbacks(this)
             }
         }
@@ -78,12 +84,15 @@ class GameActivity : AppCompatActivity() {
     private var gameEndHandler = Handler(Looper.getMainLooper())
     private var gameEndRunnable = object : Runnable {
         override fun run() {
-            endRound = when {
-                pointsForRoundWin != null && crown.points >= pointsForRoundWin!! -> true
-                remainingTime <= 0 -> true
-                else -> false
+            roundState = when {
+                pointsForRoundWin != null && crown.points >= pointsForRoundWin!! -> ROUND_END
+                remainingTime <= 0 -> ROUND_END
+                else -> roundState
             }
-            if (endRound) endRoundWacther() else gameEndHandler.postDelayed(this, 500)
+            if (roundState == ROUND_END) endRoundWacther() else gameEndHandler.postDelayed(
+                this,
+                500
+            )
         }
     }
 
@@ -100,15 +109,15 @@ class GameActivity : AppCompatActivity() {
         if (intent.extras != null) {
             val extras = intent.extras
             gameConfig = extras?.getParcelable("config")!!
-            offTeams = gameConfig.teams
+//            offTeams = gameConfig.teams
             totalrounds = gameConfig.rounds
             roundTime = convertStringToMillis(gameConfig.roundTime)
             remainingTime = roundTime
             pointsForRoundWin = gameConfig.roundPoints
         }
-        roundTime = convertStringToMillis("00:05")
-        totalrounds = 3
-        pointsForRoundWin = 55
+        roundTime = convertStringToMillis("10:00")
+        totalrounds = 5
+        pointsForRoundWin = 5
         remainingTime = roundTime
 
         intializeViews()
@@ -122,6 +131,8 @@ class GameActivity : AppCompatActivity() {
         updateState()
         setupAdapter()
         endRoundWacther()
+
+        Log.v("K_DEBUG", roundState.toString())
     }
 
     override fun onPause() {
@@ -131,17 +142,18 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun endRoundWacther() {//
-        if (!endRound) {
-            gameEndHandler.postDelayed(gameEndRunnable, 500)
-        } else if (round >= totalrounds) {
+        if (round > totalrounds) {
+            roundState = GAME_END
             timerTextView.text = "Game End"
-            Log.v("K_DEBUG", gameHistory.toString())
+            timerTextView.setOnClickListener(null)
+
+        } else if (roundState != ROUND_END) {
+            gameEndHandler.postDelayed(gameEndRunnable, 500)
         } else {
             timerTextView.text = "Next Round"
             round++
             gameHistory[round - 2].endTime = System.currentTimeMillis()
         }
-
     }
 
     fun convertStringToMillis(timeString: String): Long {
@@ -163,8 +175,9 @@ class GameActivity : AppCompatActivity() {
             if (round > gameHistory.size) {
                 gameHistory[round - 2].endTime = System.currentTimeMillis()
             }
-            if (!endRound) {
+            if (roundState != ROUND_END) {
                 if (!timerHandler.hasCallbacks(timerRunnable)) {
+                    roundState = ROUND_RUNNING
                     startTime = System.currentTimeMillis()
                     timerHandler.postDelayed(timerRunnable, 0)
                 } else {
@@ -172,6 +185,7 @@ class GameActivity : AppCompatActivity() {
                     remainingTime -= (currentTime - startTime)
                     timerHandler.removeCallbacks(timerRunnable)
                     timerTextView.text = "(Paused) ${timerTextView.text}"
+                    roundState = ROUND_PAUSED
                 }
             } else if (round <= totalrounds) {
                 setupNewRound()
@@ -183,17 +197,22 @@ class GameActivity : AppCompatActivity() {
         timerTextView.text = "Start Round"
         roundView.text = "Round ${(round)}"
         remainingTime = roundTime
-        endRound = false
-
+        roundState = ROUND_WAITING
         offTeams.apply {
             add(currentGameState.crown)
             add(currentGameState.challenger)
             sortByDescending {
                 it.points
             }
+        }.forEach {
+            it.points = 0
         }
         crown = offTeams.removeFirst()
         challenger = offTeams.removeFirst()
+
+
+        if (offTeams.size > 1) offTeams.removeLast()
+
         gameHistory.add(RoundHistory())
 
         gameEndHandler.postDelayed(gameEndRunnable, 500)
@@ -227,11 +246,10 @@ class GameActivity : AppCompatActivity() {
 
         // Initialize Timer TextView
         timerTextView = findViewById(R.id.time)
-
     }
 
     fun CrownPoint(view: View) {
-        if (endRound) return
+        if (roundState != ROUND_RUNNING) return
 
         currentGameState.crown.points++
 
@@ -245,7 +263,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun ChallPoint(view: View) {
-        if (endRound) return
+        if (roundState != ROUND_RUNNING) return
 
         val last = crown
         crown = challenger
@@ -272,6 +290,25 @@ class GameActivity : AppCompatActivity() {
         challTeamPoints.text = "${currentGameState.challenger.points}"
         challTeamField.setBackgroundColor(currentGameState.challenger.color)
 
+        Log.v("K_DEBUG", gameHistory[round -1].history.toString())
+    }
+
+    fun ctrlZ(view : View){
+        if (gameHistory[round - 1].history.size <= 1) return
+
+        gameHistory[round - 1].history.removeLast()
+        val lastState = gameHistory[round - 1].history.removeLast()
+
+        offTeams.apply {
+            clear()
+            addAll(lastState.orderedTeams)
+        }
+        challenger = lastState.challenger
+        crown = lastState.crown
+
+
+        offTeamAdapter?.notifyDataSetChanged()
+        updateState()
     }
 
 }

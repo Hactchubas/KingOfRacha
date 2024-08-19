@@ -157,4 +157,25 @@
         app:layout_constraintStart_toStartOf="@+id/challenger"
         app:layout_constraintTop_toBottomOf="@+id/challenger" />
 
+    <Button
+        android:id="@+id/ctrlZ"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="@android:drawable/ic_media_rew"
+        android:onClick="ctrlZ"
+        app:layout_constraintBottom_toBottomOf="@+id/time"
+        app:layout_constraintStart_toStartOf="@+id/crown"
+        app:layout_constraintTop_toBottomOf="@+id/currentRound" />
+
+    <Button
+        android:id="@+id/ctrlAltZ"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="@android:drawable/ic_media_ff"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/time"
+        app:layout_constraintEnd_toEndOf="@+id/crown"
+        app:layout_constraintTop_toBottomOf="@+id/currentRound"
+        tools:visibility="visible" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
