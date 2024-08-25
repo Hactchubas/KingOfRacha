@@ -20,7 +20,8 @@ data class GameState(
             arrayListOf<String>().apply {
                 addAll(gameState.crown.players)
             },
-            gameState.crown.points
+            gameState.crown.points,
+            gameState.crown.color
         )
     )
     var challenger: Team
