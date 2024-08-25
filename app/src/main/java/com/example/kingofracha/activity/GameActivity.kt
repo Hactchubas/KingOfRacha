@@ -109,15 +109,15 @@ class GameActivity : AppCompatActivity() {
         if (intent.extras != null) {
             val extras = intent.extras
             gameConfig = extras?.getParcelable("config")!!
-//            offTeams = gameConfig.teams
+            offTeams = gameConfig.teams
             totalrounds = gameConfig.rounds
             roundTime = convertStringToMillis(gameConfig.roundTime)
             remainingTime = roundTime
             pointsForRoundWin = gameConfig.roundPoints
         }
-        roundTime = convertStringToMillis("10:00")
-        totalrounds = 5
-        pointsForRoundWin = 5
+//        roundTime = convertStringToMillis("10:00")
+//        totalrounds = 5
+//        pointsForRoundWin = 5
         remainingTime = roundTime
 
         intializeViews()
