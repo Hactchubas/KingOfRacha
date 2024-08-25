@@ -1,10 +1,14 @@
 package com.example.kingofracha.activity
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -38,17 +42,47 @@ class GameConfigActivity : AppCompatActivity() {
             insets
         }
 
-        teamsListView = findViewById(R.id.teamsList)
-        // Config Adapter
-        configTeamAdapter = ConfigTeamAdapter(configTeamsList, this)
-        // Config RecyclerView
-        val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this).apply {
-            stackFromEnd = true
+        val sharedFileName="game_config"
+        val sp:SharedPreferences = getSharedPreferences(sharedFileName, Context.MODE_PRIVATE)
+        if( sp != null ) {
+            val roundsText = findViewById<TextView>(R.id.roundsEditView)
+            val rounds = sp.getInt("rouds", 0)
+            roundsText.text = if(rounds == 0) "" else rounds.toString()
+
+            val roundTimeView = findViewById<TextView>(R.id.roundTimeEditView)
+            val roundTime = sp.getString("round_time", "")
+            roundTimeView.text = if(roundTime == "") "" else roundTime.toString()
+
+            val pointsText = findViewById<TextView>(R.id.roundPointsEditView)
+            val points = sp.getInt("points", 0)
+            pointsText.text = if(points == 0) "" else points.toString()
+
         }
-        teamsListView.setHasFixedSize(false)
-        teamsListView.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
-        teamsListView.layoutManager = layoutManager
-        teamsListView.adapter = configTeamAdapter
+
+
+        var newGame: Boolean? = false
+        if (intent.extras != null) {
+            val extras = intent.extras
+            newGame = extras?.getBoolean("newGame")
+        }
+
+        teamsListView = findViewById(R.id.teamsList)
+        if(newGame == true){
+            // Config Adapter
+            configTeamAdapter = ConfigTeamAdapter(configTeamsList, this)
+            // Config RecyclerView
+            val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this).apply {
+                stackFromEnd = true
+            }
+            teamsListView.setHasFixedSize(false)
+            teamsListView.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
+            teamsListView.layoutManager = layoutManager
+            teamsListView.adapter = configTeamAdapter
+        } else {
+            findViewById<LinearLayout>(R.id.teamsLinearLayout).visibility = View.GONE
+            findViewById<Button>(R.id.createGameButton).text = "Save Configuration"
+        }
+
 
     }
 
@@ -89,6 +123,7 @@ class GameConfigActivity : AppCompatActivity() {
     }
 
     fun createGame(view: View){
+
         val roundsText = findViewById<TextView>(R.id.roundsEditView).text.toString()
         val rounds : Int? = if (roundsText == "") null else Integer.valueOf(roundsText)
 
@@ -96,6 +131,23 @@ class GameConfigActivity : AppCompatActivity() {
 
         val pointsText = findViewById<TextView>(R.id.roundPointsEditView).text.toString()
         val points : Int? = if (pointsText == "") null else Integer.valueOf(pointsText)
+
+
+        if (findViewById<Button>(R.id.createGameButton).text == "Save Configuration"){
+            val sharedFileName="game_config"
+            var sp: SharedPreferences = getSharedPreferences(sharedFileName, Context.MODE_PRIVATE)
+            var editor = sp.edit()
+            editor.putInt("rouds", rounds ?: 0)
+            editor.putString("round_time", roundTime)
+            editor.putInt("points", points ?: 0)
+            editor.commit()
+
+
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+            return
+        }
+
 
         if (
             configTeamsList.size > 2
