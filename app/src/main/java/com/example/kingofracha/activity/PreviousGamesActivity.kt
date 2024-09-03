@@ -1,21 +1,31 @@
 package com.example.kingofracha.activity
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.kingofracha.R
+import com.example.kingofracha.adapter.HistoryAdapter
 
 class PreviousGamesActivity : AppCompatActivity() {
+
+    private lateinit var historyRecyclerView: RecyclerView
+    private lateinit var historyAdapter: HistoryAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_previous_games)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+            setContentView(R.layout.activity_previous_games)
+
+        historyRecyclerView = findViewById(R.id.historyRecyclerView)
+
+        val sharedPreferences = getSharedPreferences("GameHistory", Context.MODE_PRIVATE)
+        val gameHistory = sharedPreferences.getString("game_history", "No games recorded.")?.split("\n\n") ?: listOf("No games recorded.")
+
+        historyAdapter = HistoryAdapter(gameHistory, this)
+        historyRecyclerView.layoutManager = LinearLayoutManager(this)
+        historyRecyclerView.adapter = historyAdapter
     }
 }
