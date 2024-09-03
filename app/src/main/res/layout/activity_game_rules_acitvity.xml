@@ -5,6 +5,399 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
+    android:backgroundTint="#000000"
     tools:context=".activity.GameRulesActivity">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:text="Game Rules"
+        android:textColor="@color/primary"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.065" />
+
+    <TextView
+        android:id="@+id/marc1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule1"
+        app:layout_constraintTop_toTopOf="@+id/rule1"
+        app:layout_constraintEnd_toStartOf="@+id/rule1"
+        android:layout_marginEnd="4dp"
+        tools:layout_editor_absoluteX="36dp" />
+
+    <TextView
+        android:id="@+id/rule1"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="The first duo entered will be the King and the second will be the Challenger, the other duos will line up;"
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/marc2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule2"
+        app:layout_constraintTop_toTopOf="@+id/rule2"
+        app:layout_constraintEnd_toStartOf="@+id/rule2"
+        android:layout_marginEnd="4dp"
+        tools:layout_editor_absoluteX="36dp" />
+
+    <TextView
+        android:id="@+id/rule2"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="The Challenger always starts serving;"
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rule1" />
+
+    <TextView
+        android:id="@+id/marc3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule3"
+        app:layout_constraintTop_toTopOf="@+id/rule3"
+        app:layout_constraintEnd_toStartOf="@+id/rule3"
+        android:layout_marginEnd="4dp"
+        tools:layout_editor_absoluteX="36dp" />
+
+    <TextView
+        android:id="@+id/rule3"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Only the King can score points;"
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rule2" />
+
+    <TextView
+        android:id="@+id/marc4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule4"
+        app:layout_constraintTop_toTopOf="@+id/rule4"
+        app:layout_constraintEnd_toStartOf="@+id/rule4"
+        android:layout_marginEnd="4dp"
+        tools:layout_editor_absoluteX="36dp" />
+
+    <TextView
+        android:id="@+id/rule4"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="The point scored by the challenger is used to dethrone the king and make it the king;"
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rule3" />
+
+    <TextView
+        android:id="@+id/marc5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule5"
+        app:layout_constraintTop_toTopOf="@+id/rule5"
+        app:layout_constraintEnd_toStartOf="@+id/rule5"
+        android:layout_marginEnd="4dp"
+        tools:layout_editor_absoluteX="36dp" />
+
+    <TextView
+        android:id="@+id/rule5"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="When the King is dethroned:"
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rule4" />
+
+    <TextView
+        android:id="@+id/marc5_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule5_1"
+        app:layout_constraintEnd_toStartOf="@+id/rule5_1"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintTop_toTopOf="@+id/rule5_1"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/rule5_1"
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="it goes to the back of the line with its accumulated points;"
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rule5" />
+
+    <TextView
+        android:id="@+id/marc5_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule5_2"
+        app:layout_constraintTop_toTopOf="@+id/rule5_2"
+        app:layout_constraintEnd_toStartOf="@+id/rule5_2"
+        android:layout_marginEnd="4dp"
+        tools:layout_editor_absoluteX="100dp" />
+
+    <TextView
+        android:id="@+id/rule5_2"
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="the first duo in line becomes the Challenger."
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rule5_1" />
+
+    <TextView
+        android:id="@+id/marc6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule6"
+        app:layout_constraintTop_toTopOf="@+id/rule6"
+        app:layout_constraintEnd_toStartOf="@+id/rule6"
+        android:layout_marginEnd="4dp"
+        tools:layout_editor_absoluteX="36dp" />
+
+    <TextView
+        android:id="@+id/rule6"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="The round ends when:"
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rule5_2" />
+
+    <TextView
+        android:id="@+id/marc6_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule6_1"
+        app:layout_constraintTop_toTopOf="@+id/rule6_1"
+        app:layout_constraintEnd_toStartOf="@+id/rule6_1"
+        android:layout_marginEnd="4dp"
+        tools:layout_editor_absoluteX="100dp" />
+
+    <TextView
+        android:id="@+id/rule6_1"
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="any duo reaches the stipulated points (usually, 15);"
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rule6" />
+
+    <TextView
+        android:id="@+id/marc6_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule6_2"
+        app:layout_constraintTop_toTopOf="@+id/rule6_2"
+        app:layout_constraintEnd_toStartOf="@+id/rule6_2"
+        android:layout_marginEnd="4dp"
+        tools:layout_editor_absoluteX="100dp" />
+
+    <TextView
+        android:id="@+id/rule6_2"
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="the round time is over."
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rule6_1" />
+
+    <TextView
+        android:id="@+id/marc7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule7"
+        app:layout_constraintTop_toTopOf="@+id/rule7"
+        app:layout_constraintEnd_toStartOf="@+id/rule7"
+        android:layout_marginEnd="4dp"
+        tools:layout_editor_absoluteX="36dp" />
+
+    <TextView
+        android:id="@+id/rule7"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Wins the round the duo that:"
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rule6_2" />
+
+    <TextView
+        android:id="@+id/marc7_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule7_1"
+        app:layout_constraintTop_toTopOf="@+id/rule7_1"
+        app:layout_constraintEnd_toStartOf="@+id/rule7_1"
+        android:layout_marginEnd="4dp"
+        tools:layout_editor_absoluteX="100dp" />
+
+    <TextView
+        android:id="@+id/rule7_1"
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="reaches the stipulated points;"
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rule7" />
+
+    <TextView
+        android:id="@+id/marc7_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule7_2"
+        app:layout_constraintTop_toTopOf="@+id/rule7_2"
+        app:layout_constraintEnd_toStartOf="@+id/rule7_2"
+        android:layout_marginEnd="4dp"
+        tools:layout_editor_absoluteX="100dp" />
+
+    <TextView
+        android:id="@+id/rule7_2"
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="has the most points when the round time is up."
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rule7_1" />
+
+    <TextView
+        android:id="@+id/marc8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textColor="@color/primary"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/rule8"
+        app:layout_constraintTop_toTopOf="@+id/rule8"
+        app:layout_constraintEnd_toStartOf="@+id/rule8"
+        android:layout_marginEnd="4dp"
+        tools:layout_editor_absoluteX="36dp" />
+
+    <TextView
+        android:id="@+id/rule8"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="The game ends when the stipulated rounds are over."
+        android:textColor="@color/primary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.641"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rule7_2" />
+
+    <Button
+        android:id="@+id/buttonNewGame"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:onClick="newGame"
+        android:text="New Game"
+        android:textColor="@color/primary_text"
+        app:layout_constraintEnd_toEndOf="@+id/textView"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/rule8" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
