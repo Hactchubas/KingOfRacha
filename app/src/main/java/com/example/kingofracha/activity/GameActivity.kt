@@ -1,5 +1,7 @@
 package com.example.kingofracha.activity
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -25,13 +27,12 @@ import kotlin.math.max
 
 class GameActivity : AppCompatActivity() {
 
-
     private val ROUND_PAUSED = 4
     private val ROUND_END = 3
     private val ROUND_RUNNING = 2
     private val ROUND_WAITING = 1
     private val GAME_END = 0
-    private var roundState = 1
+    private var roundState = ROUND_WAITING
 
     private lateinit var gameConfig: GameConfig
     private var round = 1
@@ -51,7 +52,6 @@ class GameActivity : AppCompatActivity() {
     private lateinit var challenger: Team
     private var gameHistory = mutableListOf(RoundHistory())
     private lateinit var currentGameState: GameState
-    private var gameStateIndex: Int = 0
 
     private lateinit var offCourtTeamsView: RecyclerView
     private lateinit var crownTeamPlayers: TextView
@@ -62,6 +62,10 @@ class GameActivity : AppCompatActivity() {
     private lateinit var challTeamField: View
     private lateinit var roundView: TextView
 
+    private val PREFS_NAME = "game_preferences"
+    private val KEY_GAME_HISTORY = "game_history"
+    private val KEY_WINNER_TEAM = "winner_team"
+
     private lateinit var timerTextView: TextView
     private var roundTime: Long = 0
     private var startTime: Long = 0
@@ -69,7 +73,7 @@ class GameActivity : AppCompatActivity() {
     private var timerHandler = Handler(Looper.getMainLooper())
     private var timerRunnable = object : Runnable {
         override fun run() {
-            var currentTime = System.currentTimeMillis()
+            val currentTime = System.currentTimeMillis()
             val millis: Long = remainingTime - (currentTime - startTime)
             if (millis > 0 && roundState != ROUND_END) {
                 timerTextView.text = convertMillisToString(millis)
@@ -84,21 +88,21 @@ class GameActivity : AppCompatActivity() {
     private var gameEndHandler = Handler(Looper.getMainLooper())
     private var gameEndRunnable = object : Runnable {
         override fun run() {
-            roundState = when {
-                pointsForRoundWin != null && crown.points >= pointsForRoundWin!! -> ROUND_END
-                remainingTime <= 0 -> ROUND_END
-                else -> roundState
+            if (pointsForRoundWin != null && crown.points >= pointsForRoundWin!!) {
+                roundState = ROUND_END
+            } else if (remainingTime <= 0) {
+                roundState = ROUND_END
             }
-            if (roundState == ROUND_END) endRoundWacther() else gameEndHandler.postDelayed(
-                this,
-                500
-            )
+
+            if (roundState == ROUND_END) endRoundWatcher() else gameEndHandler.postDelayed(this, 500)
         }
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val sharedPreferences: SharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_game)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -106,6 +110,7 @@ class GameActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
         if (intent.extras != null) {
             val extras = intent.extras
             gameConfig = extras?.getParcelable("config")!!
@@ -115,10 +120,6 @@ class GameActivity : AppCompatActivity() {
             remainingTime = roundTime
             pointsForRoundWin = gameConfig.roundPoints
         }
-//        roundTime = convertStringToMillis("10:00")
-//        totalrounds = 5
-//        pointsForRoundWin = 5
-        remainingTime = roundTime
 
         intializeViews()
         setupTimer()
@@ -127,10 +128,9 @@ class GameActivity : AppCompatActivity() {
         currentGameState = GameState(offTeams, crown)
         challenger = Team(currentGameState.challenger)
 
-        //Update game
         updateState()
         setupAdapter()
-        endRoundWacther()
+        gameEndHandler.postDelayed(gameEndRunnable, 500)
 
         Log.v("K_DEBUG", roundState.toString())
     }
@@ -141,10 +141,53 @@ class GameActivity : AppCompatActivity() {
         gameEndHandler.removeCallbacks(gameEndRunnable)
     }
 
-    fun endRoundWacther() {//
-        if (round > totalrounds) {
+    private fun saveGameResult(context: Context) {
+        val sharedPreferences = context.getSharedPreferences("GameHistory", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+
+        // Cria uma entrada para o jogo atual
+        val gameResult = StringBuilder()
+            .append("Game ${sharedPreferences.getInt("game_count", 0) + 1}\n")
+            .append("Teams:\n")
+            .append((offTeams + listOf(crown, challenger))
+                .sortedByDescending { it.points }
+                .joinToString("\n") { "${it.playersString()} : ${it.points} pts" })
+
+        // Atualiza o histórico de jogos
+        val previousHistory = sharedPreferences.getString("game_history", "")
+        val newHistory = if (previousHistory.isNullOrEmpty()) {
+            gameResult.toString()
+        } else {
+            "$previousHistory\n\n$gameResult"
+        }
+        editor.putString("game_history", newHistory)
+
+        // Atualiza o contador de jogos
+        editor.putInt("game_count", sharedPreferences.getInt("game_count", 0) + 1)
+        editor.apply()
+
+        // Adicione um log para verificar se o resultado foi salvo
+        Log.d("GameActivity", "Game result saved: $gameResult")
+    }
+
+
+    private fun findWinningTeam(): Team {
+        return offTeams.maxByOrNull { it.points } ?: crown
+    }
+
+    private fun endRoundWatcher() {
+        if (round > totalrounds || (pointsForRoundWin != null && crown.points >= pointsForRoundWin!!)) {
             roundState = GAME_END
             timerTextView.text = "Game End"
+            timerTextView.setOnClickListener(null)
+
+            // Salvar resultado do jogo
+            saveGameResult(this)
+
+            Toast.makeText(this, "Game result saved!", Toast.LENGTH_SHORT).show()
+
+            // Parar o relógio
+            timerHandler.removeCallbacks(timerRunnable)
             timerTextView.setOnClickListener(null)
 
         } else if (roundState != ROUND_END) {
@@ -157,21 +200,20 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun convertStringToMillis(timeString: String): Long {
-        val minSec = timeString.split(":").map {
-            it.toLong()
-        }
+        val minSec = timeString.split(":").map { it.toLong() }
         return minSec[0] * 60000 + minSec[1] * 1000
     }
 
     fun convertMillisToString(millis: Long): String {
-        var seconds = (millis / 1000).toInt()
+        val seconds = (millis / 1000).toInt()
         val minutes = seconds / 60
-        seconds %= 60
-        return String.format("%d:%02d", minutes, seconds)
+        return String.format("%d:%02d", minutes, seconds % 60)
     }
 
     fun setupTimer() {
         timerTextView.setOnClickListener {
+            if (roundState == GAME_END) return@setOnClickListener
+
             if (round > gameHistory.size) {
                 gameHistory[round - 2].endTime = System.currentTimeMillis()
             }
@@ -195,21 +237,16 @@ class GameActivity : AppCompatActivity() {
 
     private fun setupNewRound() {
         timerTextView.text = "Start Round"
-        roundView.text = "Round ${(round)}"
+        roundView.text = "Round $round"
         remainingTime = roundTime
         roundState = ROUND_WAITING
         offTeams.apply {
             add(currentGameState.crown)
             add(currentGameState.challenger)
-            sortByDescending {
-                it.points
-            }
-        }.forEach {
-            it.points = 0
-        }
+            sortByDescending { it.points }
+        }.forEach { it.points = 0 }
         crown = offTeams.removeFirst()
         challenger = offTeams.removeFirst()
-
 
         if (offTeams.size > 1) offTeams.removeLast()
 
@@ -221,10 +258,7 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun setupAdapter() {
-        // Config Adpter
         offTeamAdapter = OffTeamAdapter(offTeams, this)
-
-        // Config RecyclerView
         val layoutManager: RecyclerView.LayoutManager = LinearLayoutManager(this)
         offCourtTeamsView.setHasFixedSize(true)
         offCourtTeamsView.addItemDecoration(DividerItemDecoration(this, LinearLayout.VERTICAL))
@@ -233,18 +267,14 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun intializeViews() {
-        //
         offCourtTeamsView = findViewById(R.id.offCourtTeams)
         roundView = findViewById(R.id.currentRound)
-        // Initialize Crown and Challengers
-        crownTeamPlayers = findViewById<TextView>(R.id.crownTeamPlayers)
-        crownTeamPoints = findViewById<TextView>(R.id.crownTeamPoints)
-        crownTeamField = findViewById<View>(R.id.crown)
-        challTeamPlayers = findViewById<TextView>(R.id.challTeamPlayers)
-        challTeamPoints = findViewById<TextView>(R.id.challTeamPoints)
-        challTeamField = findViewById<View>(R.id.challenger)
-
-        // Initialize Timer TextView
+        crownTeamPlayers = findViewById(R.id.crownTeamPlayers)
+        crownTeamPoints = findViewById(R.id.crownTeamPoints)
+        crownTeamField = findViewById(R.id.crown)
+        challTeamPlayers = findViewById(R.id.challTeamPlayers)
+        challTeamPoints = findViewById(R.id.challTeamPoints)
+        challTeamField = findViewById(R.id.challenger)
         timerTextView = findViewById(R.id.time)
     }
 
@@ -253,7 +283,7 @@ class GameActivity : AppCompatActivity() {
 
         currentGameState.crown.points++
 
-        var last = challenger
+        val last = challenger
         challenger = offTeams.removeFirst()
         offTeamAdapter?.notifyItemRemoved(0)
         offTeams.add(last)
@@ -281,19 +311,19 @@ class GameActivity : AppCompatActivity() {
         currentGameState.crown = crown
 
         gameHistory[round - 1].history.add(GameState(currentGameState))
-        // Crowned Team
+
         crownTeamPlayers.text = currentGameState.crown.playersString()
         crownTeamPoints.text = "${currentGameState.crown.points}"
         crownTeamField.setBackgroundColor(currentGameState.crown.color)
-        // Challenger Team
+
         challTeamPlayers.text = currentGameState.challenger.playersString()
         challTeamPoints.text = "${currentGameState.challenger.points}"
         challTeamField.setBackgroundColor(currentGameState.challenger.color)
 
-        Log.v("K_DEBUG", gameHistory[round -1].history.toString())
+        Log.v("K_DEBUG", gameHistory[round - 1].history.toString())
     }
 
-    fun ctrlZ(view : View){
+    fun ctrlZ(view: View) {
         if (gameHistory[round - 1].history.size <= 1) return
 
         gameHistory[round - 1].history.removeLast()
@@ -306,9 +336,7 @@ class GameActivity : AppCompatActivity() {
         challenger = lastState.challenger
         crown = lastState.crown
 
-
         offTeamAdapter?.notifyDataSetChanged()
         updateState()
     }
-
 }
